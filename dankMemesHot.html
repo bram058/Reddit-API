@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dankmemes Hot</title>
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+  </head>
+  <body>
+
+    <nav class="navcontrol" role="navigation">
+            <div class="nav-wrapper container"><a id="logo-container" href="index.html" class="brand-logo"><img src="css/logo.png" width="50" height="50" align="center"/></a>
+        <ul class="right hide-on-med-and-down">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="dankMemesTop.html">Top</a></li>
+          <li><a href="dankMemesNew.html">New</a></li>
+          <li><a href="dankMemesHot.html"><img src="css/refresh.png" title="Refresh" width="20" height="20" align="center"></a></li>
+        </ul>
+
+        <ul id="nav-mobile" class="sidenav">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="dankMemesTop.html">Top</a></li>
+          <li><a href="dankMemesNew.html">New</a></li>
+        </ul>
+        <a href="#" data-target="nav-mobile" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+      </div>
+    </nav>
+
+    <div class="section no-pad-bot" id="index-banner">
+      <div class="container">
+        <!-- <br><br> -->
+        <h3>r/dankmemes hot posts</h3>
+
+  <main>
+    <div id="main"></div>
+  </main>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script src="js/materialize.js"></script>
+  <script src="js/init.js"></script>
+  </body>
+</html>
+
+
+<script>
+$(document).ready(function(){
+  getRedditJson();
+});
+
+function getRedditJson(ajaxurl){
+  $.ajax({
+    method: 'GET',
+    url: 'https://www.reddit.com/r/dankmemes/hot/.json',
+    dataType: 'json',
+    success: onSuccess,
+    error: onError
+  })
+}
+
+function onSuccess(jsonReturn){
+
+  //clear main html
+  $('#main').empty();
+
+  var fadeInAmt = 1000;
+
+  for(var i=0; i<jsonReturn.data.children.length; i++) {
+
+    var data = jsonReturn.data.children[i].data;
+    var datalink = 'http://www.reddit.com/'+data.permalink;
+    var dataimg = data.thumbnail;
+    var title = data.title;
+    var subreddit = data.subreddit;
+    var author = data.author;
+    var hourssince = parseInt( Date.now() - data.created);
+    var hoursago = Math.round( hourssince / 1000 / 60 / 60 / 60 / 60 / 60);
+    var subtext = "submitted "+hoursago+" hours ago by " +author+ " on <a>" +subreddit+ "</a>";
+
+    //load content one peice at a time
+    var loadthis = "<a style='cursor:pointer;' href='"+datalink+"'><section class='post-container'><article><img class='thumb' src='"+dataimg+"'></article><article><h3><a href='"+datalink+"'>"+title+"</a></h3><p>"+subtext+"</p></article></section></a>";
+    $(loadthis).hide().appendTo($('#main')).fadeIn(fadeInAmt);
+  }
+
+}
+
+//if JSON fails
+function onError(){
+  $('#main').html('i failed.');
+}
+</script>
